@@ -146,7 +146,10 @@
                             <?php elseif ($isReported === true): ?>
                             <a class="btn btn-danger disabled" data-bs-toggle="modal" href="#reportPost" id="report-btn" role="button">Reported</a>
                             <?php endif; ?>
+
+                            <?php if(isset($_SESSION['user_id'])): ?>
                             <a class="btn btn-outline-danger ms-2" data-bs-toggle="modal" href="#deleteProject" role="button">Delete</a>
+                            <?php endif; ?>
                         </form>
 
                         <form method="post" action="editProject.php?p=<?php echo $key?>" id="edit_form">
