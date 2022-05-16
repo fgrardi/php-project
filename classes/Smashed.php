@@ -54,8 +54,7 @@ class Smashed {
     public static function showSmashedProjects()
     {
         $conn = Db::getInstance();
-        $statement = $conn->prepare(
-        "SELECT * FROM posts INNER JOIN users ON posts.user_id = users.id INNER JOIN tags ON tags.post_id = posts.id WHERE posts.isShowcase=1" );
+        $statement = $conn->prepare("SELECT * FROM posts INNER JOIN users ON posts.user_id = users.id INNER JOIN tags ON tags.post_id = posts.id WHERE posts.isShowcase=1" );
         $statement->execute();
         $result = $statement->fetchAll();
         return $result;

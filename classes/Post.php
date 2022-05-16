@@ -205,15 +205,20 @@ class Post
     public function smashExists()
     {
         $conn = Db::getInstance();
-        $statement = $conn->prepare("SELECT COUNT(id) FROM posts WHERE posts.isShowcase = 1 AND id=:id");
+        $statement = $conn->prepare("SELECT COUNT(id) FROM posts WHERE posts.isShowcase=1 AND id=:id");
         $statement->bindValue(':id', $this->postId);
         $statement->execute();
-        $count = intval($statement->fetchColumn());
+        $count = $statement->fetch();
 
-        if ($count > 0) {
+        if ($count === 1) {
             return true;
+        } 
+        else{
+            false;
         }
+        
         return $count;
+
     }
 
     public static function smashed($postId)
