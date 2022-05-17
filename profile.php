@@ -128,6 +128,12 @@
                             $isSmashed = $smash->isSmashed();
                             // var_dump($post['id']);
                             // var_dump($isSmashed);
+
+                            $like = new Like();
+                            $like->setPostId($post['id']);
+                            $like->setUserId($_SESSION['id']);
+                            $isLiked = $like->isPostLikedByUser();
+                            $count = $like->getLikes();
                         ?>
                         <div class="col-12 col-md-6 col-lg-4 p-4">
                             <img src="uploaded_projects/<?php echo htmlspecialchars($post['image']);?>" width="100%" height="250px"
@@ -142,8 +148,17 @@
                                         </a>
                                     </div>
                                     <div class="d-flex align-items-center">
-                                        <img src="assets/images/empty-heart.svg" class="like">
-                                        <p class="num-of-likes">1</p>
+                                    <?php if (!$isLiked): ?>
+                                        <img src="assets/images/empty-heart.svg" name= "like" class="like notLiked" id="likePost" data-userid="<?php echo $_SESSION['id'] ?>" data-postid="<?php echo $p['id'] ?>">
+                                        <?php if ($count['COUNT(id)'] === "0"): ?>
+                                            <p class="num-of-likes" data-postid="<?php echo $post['id'] ?>"><?php ?></p>
+                                        <?php else : ?>
+                                            <p class="num-of-likes" data-postid="<?php echo $post['id'] ?>"><?php echo $count['COUNT(id)'] ?></p>
+                                        <?php endif; ?>
+                                    <?php else: ?>
+                                        <img src="assets/images/liked-heart.svg" name= "like" class="like notLiked" id="likePost" data-userid="<?php echo $_SESSION['id'] ?>" data-postid="<?php echo $p['id'] ?>">
+                                        <p class="num-of-likes" data-postid="<?php echo $post['id'] ?>"><?php echo $count['COUNT(id)'] ?></p>  
+                                    <?php endif; ?> 
                                     </div>
                                 </div>
                                 <a href="post.php?p=<?php echo $post['id'];?>">
@@ -175,6 +190,7 @@
     <script src="javascript/follow.js"></script>
     <script src="javascript/report-user.js"></script>
     <script src="javascript/smashed.js"></script>
+    <script src="javascript/like.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-ka7Sk0Gln4gmtz2MlQnikT1wXgYsOg+OMhuP+IlRH9sENBO0LRn5q+8nbTov4+1p" crossorigin="anonymous"></script>
 </body>
 </html>

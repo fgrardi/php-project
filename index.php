@@ -9,22 +9,12 @@
         $userDataFromId = User::getUserDataFromId($sessionId);
     }
 
-    $limit = 15;
-    $page = isset($_GET['page']) ? $_GET['page'] : 1;
-    $start = ($page -1) * $limit;
+    $postCount= Pagination::countPosts();
+   // $pageCount= Pagination::setPagination()
+    //$posts = Post::getPosts($sorting, $start, $limit);
 
-    $sorting = 'DESC';
-    $posts = Post::getPosts($sorting, $start, $limit);
-
-    /*$likes= new Like();
-    $likes->countLike();*/
-    
-    $conn = Db::getInstance();
-    $result = $conn->query("select count(id) AS id from posts");
-    $postCount= $result->fetchAll();
     $total= $postCount[0]['id'];
     $pages= ceil($total / $limit);
-   // $postId =  $_GET['p'];
 
     if (!empty($_POST['submit-search'])) {
         $search = $_POST['search'];
@@ -108,8 +98,8 @@
         </div>
 
         <?php if (!empty($searched)): ?>
-            <div class="d-flex mt-5 ms-3 me-3 alert alert-dark">
-                <p class="m-0">Search results for: <span class="fw-bold"><?php echo $search; ?></span></p>
+            <div class="d-flex justify-content-center">
+                <h3>Search results for: <?php echo $search; ?></h3>
             </div>
         <?php endif; ?>
 
@@ -131,7 +121,7 @@
                         $count = $like->getLikes();
                         //var_dump($count);
                     ?>
-                    <div class="col-12 col-md-4 p-4">
+                    <div class="col-4 p-4">
                         <img src="uploaded_projects/<?php echo $p['image'];?>" width="100%" height="250px"
                             class="img-project-post" style="object-fit:cover">
                         <div>
@@ -167,7 +157,7 @@
                         $count = $like->getLikes();
                         //var_dump($count);
                     ?>
-                <div class="col-12 col-md-6 col-lg-4 p-4">
+                <div class="col-4 p-4">
                     <img src="uploaded_projects/<?php echo $p['image'];?>" width="100%" height="250px"
                         class="img-project-post" style="object-fit:cover">
                     <div>
