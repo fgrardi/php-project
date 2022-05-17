@@ -9,9 +9,13 @@
         $userDataFromId = User::getUserDataFromId($sessionId);
     }
 
+    $limit = 15;
+    $page = isset($_GET['page']) ? $_GET['page'] : 1;
+    $start = ($page -1) * $limit;
+    $sorting = 'DESC';
+
     $postCount= Pagination::countPosts();
-   // $pageCount= Pagination::setPagination()
-    //$posts = Post::getPosts($sorting, $start, $limit);
+    $posts = Post::getPosts($sorting, $start, $limit);
 
     $total= $postCount[0]['id'];
     $pages= ceil($total / $limit);
@@ -215,5 +219,7 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-ka7Sk0Gln4gmtz2MlQnikT1wXgYsOg+OMhuP+IlRH9sENBO0LRn5q+8nbTov4+1p" crossorigin="anonymous"></script>
     <script src="javascript/like.js"></script>
     <script src="javascript/smashed.js"></script>
+    <script src="javascript/pagination.js"></script>
+
 </body>
 </html>
