@@ -4,19 +4,22 @@
    
     if (!empty($_POST)) {
         try {
-
             //new smashed project
-            
             $postId = intval(($_POST['postid']));
             $userId = intval(($_POST['userid']));
+            var_dump($postId);
+            var_dump($userId);
+
 
             $posts= new Post();
             $posts->setPostId($postId);
             $posts->setUserId($userId);
             $count = $posts->smashExists();
+           var_dump($count);
             
-            if ($posts->smashExists()) {
-                $posts->unsmashed($postId);
+            if ($count) {
+               $temp = $posts->unsmashed($postId);
+               var_dump($temp);
 
                 $response= [
                 "status" => "success",
@@ -24,7 +27,7 @@
                 "postid" => $postId,
                 "message" => "Unsmashed.",
                 'smashed' => false,
-                'count' => $count
+                
             ];
             } else {
                 $posts->smashed($postId);
@@ -34,7 +37,7 @@
                 "postid" => $postId,
                 'message' => "smashed.",
                 'smashed' => true,
-                'count' => $count
+               
             ];
             }
         } catch (Exception $e) {

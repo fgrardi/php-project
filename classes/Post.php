@@ -208,12 +208,13 @@ class Post
         $statement = $conn->prepare("SELECT COUNT(id) FROM posts WHERE posts.isShowcase = 1 AND id=:id");
         $statement->bindValue(':id', $this->postId);
         $statement->execute();
-        $count = intval($statement->fetchColumn());
+        $count = $statement->rowCount();
 
-        if ($count > 0) {
+        if ($count > 0 && $count["isShowcase"] != 0) {
             return true;
+        } else{
+            return false;
         }
-        return $count;
     }
 
     public static function smashed($postId)
@@ -230,6 +231,7 @@ class Post
         $statement = $conn->prepare("UPDATE posts SET isShowcase=0 where posts.id = :postId");
         $statement->bindValue(':postId', $postId);
         return $statement->execute();
+        
     }
 
     public static function showSmashedProjects($id)

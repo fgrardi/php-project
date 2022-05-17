@@ -24,9 +24,15 @@ smashed.forEach(function(smash) {
         if (result.smashed === true ) {
           smash.text = "Smashed 💥";
           smash.classList.add("active");
+          smashed.push(smash);
+          // console.log(smash);
+          // console.log(smashed.length);
+          // console.log(typeof smashed);
+
         } else {
           smash.text = "Smash";
           smash.classList.remove("active");
+          console.log("werkt");
         }
         console.log("Success:", result);
       })
