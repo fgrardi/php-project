@@ -1,12 +1,12 @@
-let currentPage= document.querySelector(".page-item")
+let currentPage;
 
-currentPage.addEventListener("click", function(e){
+document.querySelector(".page-item").addEventListener("click", function(e){
     console.log("clicked");
-/*    if(currentPage.style.display === "none") {
+
+    if(currentPage.className === "none") {
         currentPage.classList.add = "active";
     } else {
         currentPage.classList.remove = "active";
-    }*/
-    currentPage.classList.add = "active";
+    }
 
 })

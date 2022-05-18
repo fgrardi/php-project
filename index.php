@@ -16,14 +16,10 @@
 
     $postCount= Pagination::countPosts();
     $posts = Post::getPosts($sorting, $start, $limit);
-<<<<<<< HEAD
-
-=======
     
-    $conn = Db::getInstance();
+    /*$conn = Db::getInstance();
     $result = $conn->query("select count(id) AS id from posts");
-    $postCount= $result->fetchAll();
->>>>>>> main
+    $postCount= $result->fetchAll();*/
     $total= $postCount[0]['id'];
     $pages= ceil($total / $limit);
 
@@ -147,19 +143,11 @@
                         $count = $like->getLikes();
                         $tags = Post::getTagsFromPost($p[0]);
                     ?>
-<<<<<<< HEAD
-                    <div class="col-4 p-4">
-                        <img src="uploaded_projects/<?php echo $p['image'];?>" width="100%" height="250px"
-                            class="img-project-post" style="object-fit:cover">
-                        <div>
-                            <div class="d-flex justify-content-between py-2">
-=======
                     
                     <div class="col-12 col-md-4 p-4">
                         <img src="uploaded_projects/<?php echo $p['image'];?>" width="100%" height="250px" class="img-project-post" style="object-fit:cover">
                         <div class="">
                             <div class="d-flex justify-content-between align-items-center py-2">
->>>>>>> main
                                 <div class="d-flex align-items-center justify-content-start">
                                     <img src="profile_pictures/<?php echo $p['profile_pic']; ?>" class="img-profile-post">
                                     <h4 class="pt-2 ps-2"><?php echo $p['username'];?></h4>
@@ -192,23 +180,6 @@
                         $count = $like->getLikes();
                         $tags = Post::getTagsFromPost($p[0]);
                     ?>
-<<<<<<< HEAD
-                <div class="col-4 p-4">
-                    <img src="uploaded_projects/<?php echo $p['image'];?>" width="100%" height="250px"
-                        class="img-project-post" style="object-fit:cover">
-                    <div>
-                        <div class="d-flex justify-content-between py-2">
-                            <div class="d-flex align-items-center justify-content-start">
-                                <img src="profile_pictures/<?php echo $p['profile_pic']; ?>" class="img-profile-post">
-                                <a href="profile.php?p=<?php echo $p['user_id'];?>">
-                                    <h4 class="pt-2 ps-2"><?php echo $p['username'];?></h4>
-                                </a>
-                            </div>
-                            <form class="" action="" method="post">
-                                <div class="d-flex align-items-center">
-                                    <?php if (!$isLiked): ?>
-                                        <img src="assets/images/empty-heart.svg" name= "like" class="like notLiked" id="likePost" data-userid="<?php echo $_SESSION['id'] ?>" data-postid="<?php echo $p['id'] ?>">
-=======
                     <div class="col-12 col-md-6 col-lg-4 p-4">
                         <img src="uploaded_projects/<?php echo $p['image'];?>" width="100%" height="250px"
                             class="img-project-post" style="object-fit:cover">
@@ -224,7 +195,6 @@
                                     <div class="d-flex align-items-center">
                                         <?php if (!$isLiked): ?>
                                             <img src="assets/images/empty-heart.svg" name="like" class="like notLiked" id="likePost" data-userid="<?php echo $_SESSION['id'] ?>" data-postid="<?php echo $p[0] ?>">
->>>>>>> main
                                         <?php if ($count['COUNT(id)'] === "0"): ?>
                                             <p class="num-of-likes" data-postid="<?php echo $p[0] ?>"><?php ?></p>
                                         <?php else : ?>
