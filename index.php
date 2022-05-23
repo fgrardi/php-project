@@ -7,8 +7,19 @@
     if (isset($_SESSION['id'])) {
         $sessionId = $_SESSION['id'];
         $userDataFromId = User::getUserDataFromId($sessionId);
+        echo "session started";
+    } 
+    
+    if (isset($_SESSION['auth'])) {
+        $currentTime= time();
+        if ($currentTime > $_SESSION['expire']) {
+            session_unset();
+            session_destroy();
+            echo "session stopped";
+        }
     }
 
+    $sort = "Newest First";
     $limit = 15;
     $page = isset($_GET['page']) ? $_GET['page'] : 1;
     $start = ($page -1) * $limit;
@@ -16,120 +27,136 @@
 
     $postCount= Pagination::countPosts();
     $posts = Post::getPosts($sorting, $start, $limit);
+
+    $sortPopularTags = Tag::sortPopularTagsDesc();
+    
     
     /*$conn = Db::getInstance();
     $result = $conn->query("select count(id) AS id from posts");
     $postCount= $result->fetchAll();*/
     $total= $postCount[0]['id'];
     $pages= ceil($total / $limit);
-
-    if (!empty($_POST['submit-search'])) {
-        $search = $_POST['search'];
+    
+    if (isset($_GET['search']) && !empty($_GET['search'])) {
+        $search = $_GET['search'];
         $posts = Post::search($search);
         $searched = true;
     }
     
-    if (!empty($_POST['ASC'])) {
-        $sorting = 'ASC';
-        $posts = Post::getPosts($sorting, $start, $limit);
-    } elseif (!empty($_POST['DESC'])) {
-        $sorting = 'DESC';
-        $posts = Post::getPosts($sorting, $start, $limit);
-    } elseif (!empty($_POST['following'])) {
-        $posts = Post::filterPostsByFollowing($start, $limit);
-    }
-
-    if (!empty($_POST['tag'])) {
-        $tag = $_POST['tag'];
-        $posts = Tag::filterPostsByTag($tag);
+    if (isset($_GET['sort'])) {
+        $sort = $_GET['sort'];
+        if($sort == "Newest First ") {
+            $posts = Post::getPosts("DESC", $start, $limit);
+        }
+        elseif($sort == "Oldest First") {
+            $posts = Post::getPosts("ASC", $start, $limit);
+        }
+        elseif($sort == "Following") {
+            $posts = Post::filterPostsByFollowing($start, $limit);
+        }      
+    } 
+    
+    if (isset($_GET['tag']) && !empty($_GET['tag'])) {
+        $filteredTag = "#" . $_GET['tag'];
+        $posts = Tag::filterPostsByTag($filteredTag);
         $filtered = true;
     }
     
+    /*
+    if (isset($_GET['tag']) && !empty($_GET['tag'])) {
+        $popularTag = $_GET['tag'];
+        $posts = Tag::filterPostsByPopularTag($popularTag);
+        $filteredPopularTag = true;
+    }
+    */
+
     if (empty($posts)) {
         $emptystate = true;
     }
+
+//}
+//}
 
 ?><!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <?php include_once('style.php'); ?>
-    <title>Home</title>
+    <title>Smash — #WeAreIMD Showcase</title>
 </head>
 
 <body>
     <?php require_once("header.php"); ?>
 
     <div class="container mt-5 mb-5">
-        <div class="d-flex justify-content-between align-items-center m-3">
+        <div class="d-flex flex-wrap justify-content-between align-items-center m-3">
             <div class="btn-group">
                 <button type="button" class="btn btn-primary sort-title">
-                    <?php if (!empty($_POST['ASC'])): ?>
-                        <?php echo "Oldest"; ?>
-                    <?php elseif (!empty($_POST['DESC'])): ?>
-                        <?php echo "Latest"; ?>
-                    <?php elseif (!empty($_POST['following'])): ?>
-                        <?php echo "Following"; ?>
-                    <?php else: ?>
-                        <?php echo "Latest"; ?>
-                    <?php endif; ?>
+                    <?php echo $sort; ?>
                 </button>
                 <button type="button" class="btn btn-primary dropdown-toggle dropdown-toggle-split" data-bs-toggle="dropdown" aria-expanded="false">
                     <span class="visually-hidden">Toggle Dropdown</span>
                 </button>
 
                 <ul class="dropdown-menu">
-                    <form action="" method="POST">
+                    <form action="" method="GET">
                         <li>
                             <h6 class="dropdown-header">Sort by date</h6>
                         </li>
                         <li>
-                            <a class="dropdown-item sort-latest" href="#"><input type="submit" name="DESC" value="Latest"></a>
+                            <a class="dropdown-item sort-latest" href="#"><input type="submit" name="sort" value="Newest First"></a>
                         </li>
                         <li>
-                            <a class="dropdown-item sort-oldest" href="#"><input type="submit" name="ASC" value="Oldest"></a>
+                            <a class="dropdown-item sort-oldest" href="#"><input type="submit" name="sort" value="Oldest First"></a>
                         </li>
+                        <?php if (isset($_SESSION['id'])) : ?>
                         <li>
                             <h6 class="dropdown-header">Filter</h6>
                         </li>
                         <li>
                             <a class="dropdown-item filter-following" href="#"><input type="submit" name="following" value="Following"></a>
                         </li>
+                        <?php endif; ?>
                     </form>
                 </ul>
             </div>
 
-            <div class="filter-tags">
-                <a href="#" class="px-2 btn btn-light">All</a>
-                <a href="#" class="px-2 text-muted">Branding</a>
-                <a href="#" class="px-2 text-muted">Development</a>
-                <a href="#" class="px-2 text-muted">Mobile</a>
-                <a href="#" class="px-2 text-muted">Typography</a>
-            </div>
+            <?php if (!empty($sortPopularTags)): ?>
+                <div class="filter-tags">
+                    <a href="index.php" class="px-2 btn btn-light">All</a>
+                    <?php foreach ($sortPopularTags as $pTag): ?>
+                        <a href="index.php?tag=<?php echo str_replace("#", "", $pTag['tag']); ?>" class="px-2 btn btn-light"><?php echo $pTag['tag']; ?></a>
+                    <?php endforeach; ?>
+                </div>
+            <?php endif; ?>
 
-            <div>
-                <a href="#" class="px-2 btn btn-outline-primary">Filters</a>
+            <div class="filter-btn">
+                <p class="d-none"></p>
             </div>
         </div>
 
         <?php if (!empty($searched)): ?>
-            <div class="d-flex justify-content-center">
-                <h3>Search results for: <?php echo $search; ?></h3>
+            <div class="d-flex mt-5 ms-3 me-3 alert alert-dark bg-light">
+                <p class="m-0">Search results for: <span class="fw-bold"><?php echo $search; ?></span></p>
             </div>
         <?php endif; ?>
 
         <?php if (!empty($filtered)): ?>
-            <div class="d-flex mt-5 ms-3 me-3 alert alert-dark">
-                <p class="m-0">Filter by tag: <span class="fw-bold"><?php echo $tag; ?></span></p>
+            <div class="d-flex mt-5 ms-3 me-3 alert alert-dark bg-light">
+                <p class="m-0">Filter by tag: <span class="fw-bold"><?php echo $filteredTag; ?></span></p>
+            </div>
+        <?php endif; ?>
+
+        <?php if (!empty($filteredPopularTag)): ?>
+            <div class="d-flex mt-5 ms-3 me-3 alert alert-dark bg-light">
+                <p class="m-0">Filter by tag: <span class="fw-bold"><?php echo $popularTag; ?></span></p>
             </div>
         <?php endif; ?>
 
         <?php if (isset($emptystate)): ?>
-            <div class="empty-state flex-column">
-                <img class="d-block mx-auto" src="assets/images/empty-state.png" alt="emptystate">
-                <h3 class="text-center py-4">Nothing to see here...</h3>
+            <div class="empty-state">
+                <img class="d-block mx-auto" src="assets/images/empty-state-weareimd.png" alt="empty state">
             </div>
         <?php endif; ?>
 
@@ -144,13 +171,19 @@
                         $tags = Post::getTagsFromPost($p[0]);
                     ?>
                     
-                    <div class="col-12 col-md-4 p-4">
-                        <img src="uploaded_projects/<?php echo $p['image'];?>" width="100%" height="250px" class="img-project-post" style="object-fit:cover">
+                    <div class="col-12 col-md-6 col-lg-4 p-4">
+
+                        <a href="register.php">
+                            <img src="<?php echo $p['image_thumb'];?>" width="100%" height="250px" class="img-project-post" style="object-fit:cover">
+                        </a>
+
                         <div class="">
                             <div class="d-flex justify-content-between align-items-center py-2">
                                 <div class="d-flex align-items-center justify-content-start">
-                                    <img src="profile_pictures/<?php echo $p['profile_pic']; ?>" class="img-profile-post">
-                                    <h4 class="pt-2 ps-2"><?php echo $p['username'];?></h4>
+                                    <img src="<?php echo $p['profile_pic']; ?>" class="img-profile-post">
+                                    <a href="register.php">
+                                        <h4 class="pt-2 ps-2"><?php echo $p['username'];?></h4>
+                                    </a>
                                 </div>
 
                                 <div class="d-flex align-items-center">
@@ -162,12 +195,15 @@
                                     <?php endif; ?>
                                 </div>
                             </div>
-                            <h2><?php echo $p['title']; ?></h2>
-                            <p class="pe-4"><?php echo $p['description']; ?>
-                                <?php foreach ($tags as $tag): ?>
+                            <a href="register.php">
+                                <h2><?php echo $p['title']; ?></h2>
+                            </a>
+                            <p class="pe-4 mb-1 max-num-of-lines"><?php echo $p['description']; ?></p>
+                            <?php foreach ($tags as $tag): ?>
+                                <a href="register.php">
                                     <span class="link-primary"><?php echo $tag['tag']; ?></span>
-                                <?php endforeach; ?>
-                            </p>
+                                </a>
+                            <?php endforeach; ?>
                         </div>
                     </div>
 
@@ -181,12 +217,15 @@
                         $tags = Post::getTagsFromPost($p[0]);
                     ?>
                     <div class="col-12 col-md-6 col-lg-4 p-4">
-                        <img src="uploaded_projects/<?php echo $p['image'];?>" width="100%" height="250px"
-                            class="img-project-post" style="object-fit:cover">
+
+                        <a href="post.php?p=<?php echo $p[0]?>">
+                            <img src="<?php echo $p['image_thumb'];?>" width="100%" height="250px" class="img-project-post" style="object-fit:cover">
+                        </a>
+
                         <div>
                             <div class="d-flex justify-content-between align-items-center py-2">
                                 <div class="d-flex align-items-center justify-content-start">
-                                    <img src="profile_pictures/<?php echo $p['profile_pic']; ?>" class="img-profile-post">
+                                    <img src="<?php echo $p['profile_pic']; ?>" class="img-profile-post">
                                     <a href="profile.php?p=<?php echo $p['user_id'];?>">
                                         <h4 class="pt-2 ps-2"><?php echo $p['username'];?></h4>
                                     </a>
@@ -212,16 +251,10 @@
                             <a href="post.php?p=<?php echo $p[0]?>">
                                 <h2><?php echo $p['title']; ?></h2>
                             </a>
-
-                            <p class="pe-4"><?php echo $p['description']; ?>
-                                <?php foreach ($tags as $tag): ?>
-
-                                <form action="" method="post" class="d-inline">
-                                    <input value="<?php echo $tag['tag']; ?>" class="link-primary bg-transparent border-0 "
-                                        type="submit" name="tag"></input>
-                                </form>
-                                <?php endforeach; ?>
-                            </p>
+                            <p class="pe-4 mb-1 max-num-of-lines"><?php echo $p['description']; ?></p>
+                            <?php foreach ($tags as $tag): ?>
+                                <a href="index.php?tag=<?php echo str_replace("#", "", $tag['tag']); ?>" class="link-primary bg-transparent border-0 p-0"><?php echo $tag['tag']; ?></a>
+                            <?php endforeach; ?>
                         </div>
                     </div>
                 <?php endif; ?>

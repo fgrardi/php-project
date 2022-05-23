@@ -3,7 +3,7 @@
 
 
     if( !empty($_POST) ) {
-        $text = $_POST['comment'];
+        $text = $_POST['text'];
         $postId = intval($_POST['postid']);
         $userId = intval($_POST['userid']);
 
@@ -13,12 +13,17 @@
             $c->setText($text);
             $c->setPostId($postId);
             $c->setUserId($userId);
-            $c->save();
+            $result= $c->save();
+            $notEmpty= $c->getCommentsFromPostId($postId);
 
             // success
             $response = [
                 "status" => "success",
                 "message" => "Comment was saved.", 
+                "data" => [
+                    "user"=> $result, 
+                    "comments"=> $notEmpty
+                ]
             ];
 
         } catch( Exception $e ) {

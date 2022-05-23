@@ -68,7 +68,7 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <?php include_once('style.php'); ?>
-    <title>Post</title>
+    <title>Smash Post - <?php echo $projectData['title']; ?></title>
     <script type="text/javascript"></script>
 </head>
 
@@ -131,7 +131,7 @@
             <!-- are you sure alert for deleting a post -->
           
             <div class="d-flex align-items-center py-2">
-                <img src="profile_pictures/<?php echo htmlspecialchars($projectData['profile_pic']); ?>" class="img-profile-post">
+                <img src="<?php echo htmlspecialchars($projectData['profile_pic']); ?>" class="img-profile-post">
                 <a href="profile.php?p=<?php echo htmlspecialchars($projectData['user_id']);?>">
                     <h4 class="pt-2 ps-2"><?php echo htmlspecialchars($projectData['username']);?></h4>
                 </a>
@@ -163,10 +163,12 @@
                                         <p class="num-of-likes" data-postid="<?php echo $postId ?>"><?php echo $count['COUNT(id)'] ?></p>  
                                     <?php endif; ?>
                             </div>
-                            <?php if ($isReported === false): ?>
-                            <a class="btn btn-outline-primary" data-bs-toggle="modal" href="#reportPost" id="report-btn" role="button">Report</a>
-                            <?php elseif ($isReported === true): ?>
-                            <a class="btn btn-danger disabled" data-bs-toggle="modal" href="#reportPost" id="report-btn" role="button">Reported</a>
+                            <?php if (!($_SESSION['id'] == $projectData['user_id'])): ?>
+                                <?php if ($isReported === false): ?>
+                                <a class="btn btn-outline-primary" data-bs-toggle="modal" href="#reportPost" id="report-btn" role="button">Report</a>
+                                <?php elseif ($isReported === true): ?>
+                                <a class="btn btn-danger disabled" data-bs-toggle="modal" href="#reportPost" id="report-btn" role="button">Reported</a>
+                                <?php endif; ?>
                             <?php endif; ?>
                             <?php if ($_SESSION['id'] == $projectData['user_id']): ?>
                             <a class="btn btn-outline-danger ms-2" data-bs-toggle="modal" href="#deleteProject" role="button">Delete</a>
@@ -185,35 +187,46 @@
           
         <div class="row">
             <div class="col-sm-12 col-md-12 col-lg-8">
-                <img src="uploaded_projects/<?php echo htmlspecialchars($projectData['image']);?>" width="100%" height="100%"
+                <img src="<?php echo htmlspecialchars($projectData['image']);?>" width="100%" height="100%"
                     class="img-project-post" style="object-fit:cover">
             </div>
 
             <div class="col-sm-12 col-md-12 col-lg-4 d-flex align-content-between flex-wrap">
-                <div>
+                <div id="comments_block">
                     <h3>Comments</h3>
                     <?php if (isset($emptystate)): ?>
-                    <p class="">There are no comments for this project.</p>
+                    <p id="emptyText" class="emptyComment">There are no comments for this project.</p>
+                    <ul class="list-group list-group-flush" id="liststart">
+                    </ul>
                     <?php else: ?>
+                    <ul class="list-group list-group-flush" id="listupdates">
+
                     <?php foreach ($comments as $c): ?>
 
-                    <ul class="list-group list-group-flush" id="listupdates">
-                                <li class="list-group-item d-flex align-items-center border-bottom">
-                                    <a href="profile.php?p=<?php echo htmlspecialchars($c['id']);?>"><img src="profile_pictures/<?php echo htmlspecialchars($c['profile_pic']); ?>" class="img-profile-post"></a>
-                                    <a href="profile.php?p=<?php echo htmlspecialchars($c['id']);?>">
-                                        <h4 class="p-2 mb-0"><?php echo htmlspecialchars($c['username']);?></h4>
-                                    </a>
-                                    <?php echo $c['text']; ?>
+                                <li class="list-group-item border-0 border-bottom mw-80 m-1">
+                                   <div class="d-flex align-items-start"> 
+                                        <div class="d-flex align-items-center"> 
+                                            <a href="profile.php?p=<?php echo htmlspecialchars($c['id']);?>"><img src="profile_pictures/<?php echo htmlspecialchars($c['profile_pic']); ?>" class="img-profile-post"></a>
+                                            <a href="profile.php?p=<?php echo htmlspecialchars($c['id']);?>">
+                                                <h4 class="px-3 mb-0"><?php echo htmlspecialchars($c['username']);?></h4>
+                                            </a>
+                                        </div>
+                                        <div  class="mt-1">
+                                            <?php echo $c['text']; ?>
+                                        </div>
+                                   </div>
                                 </li>
-                    </ul>
+
                     <?php endforeach; ?>
+
+                    </ul>
 
                     <?php endif; ?>
                     <div class="row d-flex justify-content-between">
                         <form class="p-3" action="" method="post">
                             <div class="input-group">
-                                <input type="text" class="form-control" placeholder="Place a comment" aria-label="Place a comment" aria-describedby="button-addon2" id="comment" name="comment">
-                                <input type="submit" name="addComment" id="btnSubmit" data-userid="<?php echo $userId ?>" data-postid="<?php echo $postId ?>" value=">" class="btn btn-outline-primary btn-icon-search" >
+                                <input type="text" class="form-control" placeholder="Place a comment" aria-label="Place a comment" aria-describedby="button-addon2" id="comment" name="text">
+                                <input type="submit" name="text" id="btnSubmit" data-userid="<?php echo $userId ?>" data-postid="<?php echo $postId ?>" value=">" class="btn btn-outline-primary btn-icon-search" >
                             </div>
                         </form>
                     </div>
