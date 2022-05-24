@@ -36,8 +36,7 @@ like.addEventListener("click", function(e){
                 //btn.classList.remove("active");
                 number.forEach(function(num){
                     if(num.dataset.postid === postId){
-                        num.innerHTML--;
-                        
+                        num.innerHTML--;     
                     }
                 })
             }

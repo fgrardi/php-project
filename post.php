@@ -153,16 +153,26 @@
                         <form class="d-flex align-items-center" action="" method="post">
                             <div class="btn btn-primary d-flex align-items-center mx-2 p-2">
                             <?php if (!$isLiked): ?>
-                                        <span class="whiteLike"><img src="assets/images/empty-heart.svg" name= "like" class="whiteLike like notLiked" id="likePost" data-userid="<?php echo $_SESSION['id'] ?>" data-postid="<?php echo $postId ?>"></span>
-                                        <?php if ($count['COUNT(id)'] === "0"): ?>
-                                            <p class="num-of-likes" data-postid="<?php echo $postId ?>"><?php ?></p>
-                                        <?php else : ?>
-                                            <p class="num-of-likes" data-postid="<?php echo $postId ?>"><?php echo $count['COUNT(id)'] ?></p>
-                                        <?php endif; ?>
-                                    <?php else: ?>
-                                        <span class="whiteLike"><img src="assets/images/liked-heart.svg" name= "like" class="whiteLike like notLiked" id="likePost" data-userid="<?php echo $_SESSION['id'] ?>" data-postid="<?php echo $postId ?>"></span>
-                                        <p class="num-of-likes" data-postid="<?php echo $postId ?>"><?php echo $count['COUNT(id)'] ?></p>  
+                                <div class="notLikedBtn">
+                                    <img src="assets/images/empty-heart.svg" name= "like" class="like notLiked" id="likePost" data-userid="<?php echo $_SESSION['id'] ?>" data-postid="<?php echo $postId ?>">
+                                    <img src="assets/images/white-heart.svg" name= "like" class="whiteLike like notLiked" id="likePost" data-userid="<?php echo $_SESSION['id'] ?>" data-postid="<?php echo $postId ?>">
+                                </div>
+                                    <?php if ($count['COUNT(id)'] === "0"): ?>
+                                    <div class="notLikedBtn">
+                                        <img src="assets/images/empty-heart.svg" name= "like" class="like notLiked" id="likePost" data-userid="<?php echo $_SESSION['id'] ?>" data-postid="<?php echo $postId ?>">
+                                        <img src="assets/images/white-heart.svg" name= "like" class="whiteLike like notLiked" id="likePost" data-userid="<?php echo $_SESSION['id'] ?>" data-postid="<?php echo $postId ?>">
+                                    </div>
+                                    <p class="num-of-likes" data-postid="<?php echo $postId ?>"><?php ?></p>
+                                    <?php else : ?>
+                                        
+                                        <p class="num-of-likes" data-postid="<?php echo $postId ?>"><?php echo $count['COUNT(id)'] ?></p>
                                     <?php endif; ?>
+                                <?php else: ?>
+                                        <div class="notLikedBtn">
+                                            <img src="assets/images/liked-heart.svg" name= "like" class="like notLiked" id="likePost" data-userid="<?php echo $_SESSION['id'] ?>" data-postid="<?php echo $postId ?>">
+                                        </div>
+                                        <p class="num-of-likes" data-postid="<?php echo $postId ?>"><?php echo $count['COUNT(id)'] ?></p>  
+                                <?php endif; ?>
                             </div>
                             <?php if (!($_SESSION['id'] == $projectData['user_id'])): ?>
                                 <?php if ($isReported === false): ?>
