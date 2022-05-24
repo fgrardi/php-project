@@ -35,11 +35,23 @@ class Tag
     public function addTagsToDatabase($post_id)
     {
         $tags = $this->getTags();
+
+        $myString = $tags;
+        if (strpos($myString, '#') !== false) {
+
+
+            echo "My string contains a hashtag";
+        } else {
+            echo "My string contains not a hashtag";
+            $tags =  "#" . $tags;
+        }
+
         $tags = explode(" ", $tags);
         $conn = Db::getInstance();
+
         $statement = $conn->prepare("insert into tags (tag, post_id) values (:tag, :post_id)");
-      
-        for ($i=0; $i<count($tags); $i++) {
+
+        for ($i = 0; $i < count($tags); $i++) {
             $statement->bindValue(":tag", $tags[$i]);
             $statement->bindValue(":post_id", $post_id);
             $result = $statement->execute();
